@@ -289,7 +289,7 @@ export async function createToolFromConfig(config: YamlConfig, server: any) {
 export function createCollectionsTool(server: any) {
   server.tool(
     "get_available_collections",
-    "Get available collections from environment variables",
+    "Get all the available collections that can be used to get answers from",
     {},
     async () => {
       console.error("get_available_collections tool called");
