@@ -181,7 +181,7 @@ export async function createToolFromConfig(config: YamlConfig, server: any) {
   
   
   server.tool(
-    toolName,
+    "get_answer_from_collection",
     config.name,
     parameters,
     async (args: Record<string, string>) => {
