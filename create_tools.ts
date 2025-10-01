@@ -286,6 +286,83 @@ export async function createToolFromConfig(config: YamlConfig, server: any) {
   );
 }
 
+export function createCollectionsTool(server: any) {
+  server.tool(
+    "get_available_collections",
+    "Get available collections from environment variables",
+    {},
+    async () => {
+      console.error("get_available_collections tool called");
+      
+      try {
+        const collections: Array<{name: string, description: string}> = [];
+        
+        // Get collections from a single JSON environment variable
+        const collectionsJson = process.env.COLLECTIONS;
+        
+        if (!collectionsJson) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: 'No collections found. Please set the COLLECTIONS environment variable with a JSON map of collections.\n\nExpected format:\n{\n  "collection1": "Description 1",\n  "collection2": "Description 2"\n}',
+              },
+            ],
+          };
+        }
+        
+        try {
+          const collectionsMap = JSON.parse(collectionsJson);
+          
+          // Convert the map to an array of collection objects
+          Object.entries(collectionsMap).forEach(([name, description]) => {
+            collections.push({
+              name: name,
+              description: typeof description === 'string' ? description : 'No description available'
+            });
+          });
+          
+          // Sort collections by name
+          collections.sort((a, b) => a.name.localeCompare(b.name));
+          
+          const responseText = collections.length > 0 
+            ? `Available Collections:\n\n${collections.map(c => `• ${c.name}: ${c.description}`).join('\n')}`
+            : 'No valid collections found in the COLLECTIONS environment variable.';
+          
+          return {
+            content: [
+              {
+                type: "text",
+                text: responseText,
+              },
+            ],
+          };
+        } catch (parseError) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Error parsing COLLECTIONS JSON: ${parseError instanceof Error ? parseError.message : 'Invalid JSON format'}\n\nExpected format:\n{\n  "collection1": "Description 1",\n  "collection2": "Description 2"\n}`,
+              },
+            ],
+          };
+        }
+      } catch (error: any) {
+        const errorText = `Error fetching collections: ${error.message}`;
+        
+        return {
+          content: [
+            {
+              type: "text",
+              text: errorText,
+            },
+          ],
+        };
+      }
+    }
+  );
+}
+
 export async function loadToolsFromConfigs(server: any) {
   try {
     const endpointsDir = join(process.cwd(), 'config', 'endpoints');
@@ -302,3 +379,5 @@ export async function loadToolsFromConfigs(server: any) {
     console.error('Error loading tools from configs:', error);
   }
 }
+
+

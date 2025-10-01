@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
 import express from "express";
-import { loadToolsFromConfigs } from "./create_tools.js";
+import { loadToolsFromConfigs, createCollectionsTool } from "./create_tools.js";
 import { uuid } from "zod/v4";
 
 const app = express();
@@ -39,6 +39,9 @@ app.post('/mcp', async (req, res) => {
 
     // Load tools from YAML configs
     await loadToolsFromConfigs(server);
+    
+    // Add the collections tool
+    createCollectionsTool(server);
 
 
     // Create transport for this request

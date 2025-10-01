@@ -2,7 +2,8 @@ name: "hg-rag"
 variables:
   user_query: 
     required: true
-
+  collection_name:
+    required: true
 request_template:
   URL: https://cognita-ps-backend.ml.tfy-eo.truefoundry.cloud/retrievers/basic-rag/answer
   METHOD: POST
@@ -10,7 +11,7 @@ request_template:
     - Content-Type: application/json
   BODY: |
     {
-      "collection_name": "hg",
+      "collection_name": "{collection_name}",
       "query": "{user_query}",
       "model_configuration": {
         "name": "truefoundry/openai-main/gpt-4o-mini",
